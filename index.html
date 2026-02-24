@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fresh Blends Café</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F5EFE0;
+    --warm-white: #FAF7F0;
+    --gold: #8B6914;
+    --dark-gold: #5C420A;
+    --espresso: #2C1A08;
+    --caramel: #C8892A;
+    --light-caramel: #E8C270;
+    --accent: #A0522D;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--warm-white);
+    color: var(--espresso);
+    font-family: 'Cormorant Garamond', serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  .cursor {
+    width: 12px; height: 12px;
+    background: var(--caramel);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.15s ease;
+    mix-blend-mode: multiply;
+    transform: translate(-50%,-50%);
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1.5px solid var(--gold);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9998;
+    mix-blend-mode: multiply;
+    transform: translate(-50%,-50%);
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    padding: 24px 80px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.4s;
+  }
+  nav.scrolled {
+    background: rgba(44,26,8,0.97);
+    backdrop-filter: blur(20px);
+    padding: 16px 80px;
+    box-shadow: 0 4px 40px rgba(0,0,0,0.3);
+  }
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    color: var(--cream);
+    letter-spacing: 1px;
+  }
+  .nav-logo em { color: var(--caramel); font-style: italic; }
+  .nav-links { display: flex; gap: 40px; list-style: none; }
+  .nav-links a {
+    font-size: 13px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(245,239,224,0.7);
+    text-decoration: none;
+    transition: color 0.3s;
+    cursor: none;
+  }
+  .nav-links a:hover { color: var(--caramel); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    background: var(--espresso);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 20% 50%, rgba(200,137,42,0.15) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(139,105,20,0.1) 0%, transparent 50%);
+  }
+  .hero-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 120px 60px 100px 80px;
+    position: relative;
+    z-index: 2;
+  }
+  .hero-tag {
+    font-size: 11px;
+    letter-spacing: 5px;
+    color: var(--caramel);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 1s forwards 0.3s;
+  }
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(52px, 7vw, 88px);
+    color: var(--cream);
+    line-height: 0.95;
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fadeUp 1s forwards 0.5s;
+  }
+  .hero-title em {
+    font-style: italic;
+    color: var(--light-caramel);
+    display: block;
+  }
+  .hero-desc {
+    font-size: 19px;
+    color: rgba(245,239,224,0.6);
+    line-height: 1.85;
+    max-width: 420px;
+    margin-bottom: 48px;
+    font-weight: 300;
+    opacity: 0;
+    animation: fadeUp 1s forwards 0.7s;
+  }
+  .hero-cta {
+    display: flex;
+    gap: 16px;
+    opacity: 0;
+    animation: fadeUp 1s forwards 0.9s;
+  }
+  .btn-primary {
+    padding: 16px 40px;
+    background: var(--caramel);
+    color: var(--espresso);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-weight: 600;
+    border: none;
+    cursor: none;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-primary::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--light-caramel);
+    transform: translateX(-100%);
+    transition: transform 0.4s cubic-bezier(.23,1,.32,1);
+  }
+  .btn-primary:hover::before { transform: translateX(0); }
+  .btn-primary span { position: relative; z-index: 1; }
+  .btn-outline {
+    padding: 16px 40px;
+    background: transparent;
+    color: var(--cream);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-weight: 600;
+    border: 1px solid rgba(245,239,224,0.3);
+    cursor: none;
+    transition: all 0.3s;
+  }
+  .btn-outline:hover { border-color: var(--caramel); color: var(--caramel); }
+
+  .hero-right {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    animation: fadeIn 1.2s forwards 0.8s;
+  }
+  .hero-ring {
+    position: absolute;
+    border: 1px solid rgba(200,137,42,0.2);
+    border-radius: 50%;
+  }
+  .hero-ring:nth-child(1) { width: 520px; height: 520px; animation: spin 25s linear infinite; }
+  .hero-ring:nth-child(2) { width: 620px; height: 620px; border-style: dashed; animation: spin 35s linear infinite reverse; }
+  .hero-circle {
+    width: 420px; height: 420px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, var(--caramel), var(--dark-gold) 55%, var(--espresso));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: float 6s ease-in-out infinite;
+    box-shadow: 0 40px 100px rgba(200,137,42,0.25), inset 0 -20px 60px rgba(0,0,0,0.3);
+    z-index: 2;
+  }
+  .hero-circle-text { text-align: center; color: var(--cream); }
+  .hero-circle-icon { font-size: 72px; display: block; margin-bottom: 12px; }
+  .hero-circle-label { font-family: 'Playfair Display', serif; font-size: 26px; font-style: italic; display: block; margin-bottom: 4px; }
+  .hero-circle-sub { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; opacity: 0.6; }
+
+  .hero-bottom {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(0,0,0,0.3);
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: space-around;
+    padding: 24px 80px;
+    z-index: 3;
+    border-top: 1px solid rgba(200,137,42,0.15);
+    opacity: 0;
+    animation: fadeIn 1s forwards 1.2s;
+  }
+  .hero-stat strong {
+    display: block;
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-style: italic;
+    color: var(--light-caramel);
+  }
+  .hero-stat span {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(245,239,224,0.5);
+  }
+
+  /* MARQUEE */
+  .marquee-wrap {
+    background: var(--caramel);
+    padding: 16px 0;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .marquee-track {
+    display: inline-flex;
+    animation: marquee 22s linear infinite;
+  }
+  .marquee-item {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 4px;
+    color: var(--espresso);
+    padding: 0 36px;
+  }
+  .marquee-sep { color: rgba(44,26,8,0.35); padding: 0 8px; }
+
+  /* SECTIONS */
+  section { padding: 120px 80px; }
+  .section-label {
+    font-size: 11px;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: var(--caramel);
+    margin-bottom: 14px;
+    display: block;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(38px, 5vw, 60px);
+    line-height: 1.1;
+    margin-bottom: 20px;
+  }
+  .section-title em { font-style: italic; color: var(--gold); }
+
+  /* ABOUT */
+  .about {
+    background: var(--cream);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+  .about-card {
+    background: var(--espresso);
+    padding: 56px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 3px;
+  }
+  .about-card::after {
+    content: '';
+    position: absolute;
+    bottom: -50px; right: -50px;
+    width: 180px; height: 180px;
+    background: var(--caramel);
+    border-radius: 50%;
+    opacity: 0.12;
+  }
+  .about-card blockquote {
+    font-family: 'Playfair Display', serif;
+    font-size: 30px;
+    font-style: italic;
+    color: var(--cream);
+    line-height: 1.4;
+    margin-bottom: 20px;
+  }
+  .about-card cite {
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--caramel);
+    font-style: normal;
+  }
+  .about-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3px;
+  }
+  .stat-box {
+    background: rgba(200,137,42,0.06);
+    border: 1px solid rgba(200,137,42,0.12);
+    padding: 28px;
+    text-align: center;
+  }
+  .stat-box strong {
+    display: block;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 44px;
+    color: var(--gold);
+    letter-spacing: 2px;
+  }
+  .stat-box span {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(44,26,8,0.45);
+  }
+  .about-text p {
+    font-size: 19px;
+    line-height: 1.9;
+    color: rgba(44,26,8,0.7);
+    font-weight: 300;
+    margin-bottom: 18px;
+  }
+  .hours-strip {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 22px 0;
+    border-top: 1px solid rgba(200,137,42,0.2);
+    border-bottom: 1px solid rgba(200,137,42,0.2);
+    margin: 28px 0;
+  }
+  .hours-strip .icon { font-size: 28px; }
+  .hours-strip strong { display: block; font-family: 'Playfair Display', serif; font-size: 17px; margin-bottom: 2px; }
+  .hours-strip em { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--caramel); font-style: normal; }
+
+  /* MENU */
+  .menu {
+    background: var(--espresso);
+    position: relative;
+    overflow: hidden;
+  }
+  .menu::before {
+    content: 'MENU';
+    position: absolute;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 350px;
+    color: rgba(255,255,255,0.018);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    pointer-events: none;
+    white-space: nowrap;
+    letter-spacing: 30px;
+  }
+  .menu .section-title { color: var(--cream); }
+  .menu-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 56px;
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+  .menu-tabs {
+    display: flex;
+    gap: 4px;
+    background: rgba(255,255,255,0.04);
+    padding: 6px;
+  }
+  .menu-tab {
+    padding: 11px 22px;
+    background: transparent;
+    color: rgba(245,239,224,0.45);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border: none;
+    cursor: none;
+    transition: all 0.3s;
+  }
+  .menu-tab.active { background: var(--caramel); color: var(--espresso); font-weight: 600; }
+  .menu-tab:hover:not(.active) { color: var(--cream); }
+
+  .menu-grid { display: none; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2px; }
+  .menu-grid.active { display: grid; }
+
+  .menu-item {
+    background: rgba(255,255,255,0.035);
+    border: 1px solid rgba(200,137,42,0.07);
+    padding: 30px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(.23,1,.32,1);
+    cursor: none;
+  }
+  .menu-item::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    height: 2px;
+    width: 0;
+    background: var(--caramel);
+    transition: width 0.4s cubic-bezier(.23,1,.32,1);
+  }
+  .menu-item:hover { background: rgba(200,137,42,0.07); transform: translateY(-4px); }
+  .menu-item:hover::after { width: 100%; }
+  .item-icon {
+    position: absolute;
+    top: 22px; right: 22px;
+    font-size: 22px;
+    opacity: 0.25;
+    transition: all 0.4s;
+  }
+  .menu-item:hover .item-icon { opacity: 0.7; transform: scale(1.15) rotate(-8deg); }
+  .item-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 19px;
+    color: var(--cream);
+    margin-bottom: 7px;
+    font-weight: 700;
+    padding-right: 36px;
+  }
+  .item-ingr {
+    font-size: 12px;
+    color: rgba(245,239,224,0.38);
+    letter-spacing: 1px;
+    margin-bottom: 18px;
+    font-style: italic;
+    line-height: 1.6;
+  }
+  .item-prices { display: flex; gap: 14px; align-items: center; }
+  .price-group { display: flex; flex-direction: column; align-items: center; }
+  .price-lbl { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: rgba(245,239,224,0.28); margin-bottom: 1px; }
+  .price-val { font-family: 'Bebas Neue', sans-serif; font-size: 26px; color: var(--light-caramel); }
+  .price-divider { width: 1px; height: 28px; background: rgba(200,137,42,0.18); }
+
+  /* ADDONS */
+  .addons { background: var(--cream); }
+  .addons-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 14px;
+    margin-top: 56px;
+  }
+  .addon-card {
+    background: white;
+    border: 1px solid rgba(200,137,42,0.14);
+    padding: 26px 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s;
+    cursor: none;
+  }
+  .addon-card:hover {
+    border-color: var(--caramel);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 36px rgba(200,137,42,0.1);
+  }
+  .addon-name { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 600; }
+  .addon-price { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--caramel); }
+
+  /* CONTACT */
+  .contact {
+    background: var(--espresso);
+    text-align: center;
+    padding: 100px 80px;
+  }
+  .contact .section-title { color: var(--cream); margin-bottom: 60px; }
+  .contact-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    max-width: 780px;
+    margin: 0 auto 60px;
+  }
+  .contact-card {
+    background: rgba(255,255,255,0.035);
+    border: 1px solid rgba(200,137,42,0.1);
+    padding: 40px 28px;
+    transition: all 0.3s;
+    cursor: none;
+  }
+  .contact-card:hover {
+    background: rgba(200,137,42,0.07);
+    border-color: var(--caramel);
+  }
+  .contact-icon { font-size: 30px; display: block; margin-bottom: 14px; }
+  .contact-lbl {
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--caramel);
+    display: block;
+    margin-bottom: 8px;
+  }
+  .contact-val {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    color: var(--cream);
+    font-style: italic;
+    line-height: 1.5;
+  }
+  .footer-line { width: 60px; height: 1px; background: var(--caramel); margin: 40px auto; }
+  .footer-copy { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: rgba(245,239,224,0.28); }
+
+  /* REVEAL */
+  .reveal { opacity: 0; transform: translateY(36px); transition: all 0.85s cubic-bezier(.23,1,.32,1); }
+  .reveal.on { opacity: 1; transform: translateY(0); }
+  .reveal-d1 { transition-delay: 0.1s; }
+  .reveal-d2 { transition-delay: 0.2s; }
+  .reveal-d3 { transition-delay: 0.3s; }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp { from { opacity:0; transform:translateY(28px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+  @keyframes float { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-18px); } }
+  @keyframes spin { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
+  @keyframes marquee { from { transform:translateX(0); } to { transform:translateX(-50%); } }
+
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; min-height: auto; }
+    .hero-right { display: none; }
+    .hero-left { padding: 120px 32px 80px; }
+    .about { grid-template-columns: 1fr; padding: 80px 32px; }
+    section { padding: 80px 32px; }
+    nav, nav.scrolled { padding: 18px 32px; }
+    .contact-grid { grid-template-columns: 1fr; max-width: 320px; }
+    .hero-bottom { padding: 20px 32px; flex-wrap: wrap; gap: 16px; }
+    .menu-header { flex-direction: column; align-items: flex-start; }
+    .menu-tabs { flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="ring"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-logo">Fresh <em>Blends</em> Café</div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#menu">Menu</a></li>
+    <li><a href="#contact">Visit</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero" id="home">
+  <div class="hero-left">
+    <span class="hero-tag">— Fresh Blends Café · Philippines —</span>
+    <h1 class="hero-title">Every Sip<br><em>Tells a Story</em></h1>
+    <p class="hero-desc">Crafted with love, served with warmth. From rich espresso blends to refreshing frappes — your daily escape starts here.</p>
+    <div class="hero-cta">
+      <button class="btn-primary" onclick="scrollTo('menu')"><span>Explore Menu</span></button>
+      <button class="btn-outline" onclick="scrollTo('contact')">Visit Us</button>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-ring"></div>
+    <div class="hero-ring"></div>
+    <div class="hero-circle">
+      <div class="hero-circle-text">
+        <span class="hero-circle-icon"><img src="fb.jpg" alt="fresh blends" style="border-radius: 50%;"></span>
+        <!-- <span class="hero-circle-label">Fresh Blends</span>
+        <span class="hero-circle-sub">Café · Est. Daily</span> -->
+      </div>
+    </div>
+  </div>
+  <div class="hero-bottom">
+    <div class="hero-stat"><strong>Mon – Sat</strong><span>Open Daily</span></div>
+    <div class="hero-stat"><strong>10AM – 10PM</strong><span>Trading Hours</span></div>
+    <div class="hero-stat"><strong>30+ Drinks</strong><span>On Our Menu</span></div>
+    <div class="hero-stat"><strong>From ₱49</strong><span>Starting Price</span></div>
+  </div>
+</div>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track" id="mq">
+    <span class="marquee-item">ICED COFFEE</span><span class="marquee-sep">◆</span>
+    <span class="marquee-item">HOT COFFEE</span><span class="marquee-sep">◆</span>
+    <span class="marquee-item">FRAPPE</span><span class="marquee-sep">◆</span>
+    <span class="marquee-item">NON-COFFEE</span><span class="marquee-sep">◆</span>
+    <span class="marquee-item">SODALICIOUS</span><span class="marquee-sep">◆</span>
+    <span class="marquee-item">ADD ONS</span><span class="marquee-sep">◆</span>
+    <span class="marquee-item">ICED COFFEE</span><span class="marquee-sep">◆</span>
+    <span class="marquee-item">HOT COFFEE</span><span class="marquee-sep">◆</span>
+    <span class="marquee-item">FRAPPE</span><span class="marquee-sep">◆</span>
+    <span class="marquee-item">NON-COFFEE</span><span class="marquee-sep">◆</span>
+    <span class="marquee-item">SODALICIOUS</span><span class="marquee-sep">◆</span>
+    <span class="marquee-item">ADD ONS</span><span class="marquee-sep">◆</span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="reveal">
+    <div class="about-card">
+      <blockquote>"The best conversations start with a great cup of coffee."</blockquote>
+      <cite>— Fresh Blends Philosophy —</cite>
+    </div>
+    <div class="about-stats">
+      <div class="stat-box"><strong>30+</strong><span>Menu Drinks</span></div>
+      <div class="stat-box"><strong>₱49</strong><span>From</span></div>
+      <div class="stat-box"><strong>6</strong><span>Days a Week</span></div>
+      <div class="stat-box"><strong>12h</strong><span>Daily Hours</span></div>
+    </div>
+  </div>
+  <div class="reveal reveal-d2">
+    <span class="section-label">Who We Are</span>
+    <h2 class="section-title">A Place to <em>Slow Down</em></h2>
+    <p>At Fresh Blends Café, every drink is crafted with intention. From signature espresso lattes to indulgent frappes and refreshing Sodalicious drinks — each cup made fresh, just for you.</p>
+    <p>Whether you're powering through your morning or unwinding in the afternoon, we've got your perfect blend waiting.</p>
+    <div class="hours-strip">
+      <span class="icon">🕙</span>
+      <div>
+        <strong>Monday – Saturday · 10AM to 10PM</strong>
+        <em>We're Open &amp; Brewing</em>
+      </div>
+    </div>
+    <a href="mailto:freshblendscafeph@gmail.com" style="font-size:14px;letter-spacing:2px;text-transform:uppercase;color:var(--caramel);text-decoration:none;border-bottom:1px solid var(--caramel);padding-bottom:2px;cursor:none;">freshblendscafeph@gmail.com</a>
+  </div>
+</section>
+
+<!-- MENU -->
+<section class="menu" id="menu">
+  <div class="menu-header">
+    <div>
+      <span class="section-label">What We Serve</span>
+      <h2 class="section-title">Our <em>Full Menu</em></h2>
+    </div>
+    <div class="menu-tabs" id="tabs">
+      <button class="menu-tab active" data-tab="iced">Iced Coffee</button>
+      <button class="menu-tab" data-tab="hot">Hot Coffee</button>
+      <button class="menu-tab" data-tab="frappe">Frappe</button>
+      <button class="menu-tab" data-tab="nc">Non-Coffee</button>
+      <button class="menu-tab" data-tab="soda">Sodalicious</button>
+    </div>
+  </div>
+
+  <!-- ICED COFFEE -->
+  <div class="menu-grid active" id="tab-iced">
+    <div class="menu-item"><span class="item-icon">🧊</span><div class="item-name">White Mocha Latte</div><div class="item-ingr">Espresso, White Chocolate, Milk</div><div class="item-prices"><div class="price-group"><span class="price-lbl">Med</span><span class="price-val">₱89</span></div><div class="price-divider"></div><div class="price-group"><span class="price-lbl">Lrg</span><span class="price-val">₱109</span></div></div></div>
+    <div class="menu-item"><span class="item-icon">☕</span><div class="item-name">Spanish Latte</div><div class="item-ingr">Espresso, Milk, Condensed</div><div class="item-prices"><div class="price-group"><span class="price-lbl">Med</span><span class="price-val">₱89</span></div><div class="price-divider"></div><div class="price-group"><span class="price-lbl">Lrg</span><span class="price-val">₱109</span></div></div></div>
+    <div class="menu-item"><span class="item-icon">🌿</span><div class="item-name">Vanilla Latte</div><div class="item-ingr">Espresso, Milk, Vanilla</div><div class="item-prices"><div class="price-group"><span class="price-lbl">Med</span><span class="price-val">₱89</span></div><div class="price-divider"></div><div class="price-group"><span class="price-lbl">Lrg</span><span class="price-val">₱109</span></div></div></div>
+    <div class="menu-item"><span class="item-icon">🍫</span><div class="item-name">Mocha Latte</div><div class="item-ingr">Espresso, Milk, Chocolate</div><div class="item-prices"><div class="price-group"><span class="price-lbl">Med</span><span class="price-val">₱89</span></div><div class="price-divider"></div><div class="price-group"><span class="price-lbl">Lrg</span><span class="price-val">₱109</span></div></div></div>
+    <div class="menu-item"><span class="item-icon">☕</span><div class="item-name">Café Latte</div><div class="item-ingr">Espresso, Milk</div><div class="item-prices"><div class="price-group"><span class="price-lbl">Med</span><span class="price-val">₱89</span></div><div class="price-divider"></div><div class="price-group"><span class="price-lbl">Lrg</span><span class="price-val">₱109</span></div></div></div>
+    <div class="menu-item"><span class="item-icon">🍮</span><div class="item-name">Caramel Macchiato</div><div class="item-ingr">Espresso, Milk, Vanilla, Caramel</div><div class="item-prices"><div class="price-group"><span class="price-lbl">Med</span><span class="price-val">₱99</span></div><div class="price-divider"></div><div class="price-group"><span class="price-lbl">Lrg</span><span class="price-val">₱109</span></div></div></div>
+    <div class="menu-item"><span class="item-icon">🧂</span><div class="item-name">Salted Caramel Latte</div><div class="item-ingr">Espresso, Milk, Caramel, Salt</div><div class="item-prices"><div class="price-group"><span class="price-lbl">Med</span><span class="price-val">₱99</span></div><div class="price-divider"></div><div class="price-group"><span class="price-lbl">Lrg</span><span class="price-val">₱109</span></div></div></div>
+    <div class="menu-item"><span class="item-icon">🌰</span><div class="item-name">Nutella Latte</div><div class="item-ingr">Espresso, Nutella, Milk, Condensed</div><div class="item-prices"><div class="price-group"><span class="price-lbl">Med</span><span class="price-val">₱109</span></div><div class="price-divider"></div><div class="price-group"><span class="price-lbl">Lrg</span><span class="price-val">₱129</span></div></div></div>
+    <div class="menu-item"><span class="item-icon">🍪</span><div class="item-name">Biscoffee</div><div class="item-ingr">Espresso, Biscoff, Milk, Condensed</div><div class="item-prices"><div class="price-group"><span class="price-lbl">Med</span><span class="price-val">₱129</span></div><div class="price-divider"></div><div class="price-group"><span class="price-lbl">Lrg</span><span class="price-val">₱149</span></div></div></div>
+  </div>
+
+  <!-- HOT COFFEE -->
+  <div class="menu-grid" id="tab-hot">
+    <div class="menu-item"><span class="item-icon">☕</span><div class="item-name">Hot Americano</div><div class="item-ingr">Espresso, Hot Water</div><div class="item-prices"><div class="price-group"><span class="price-lbl">Price</span><span class="price-val">₱79</span></div></div></div>
+    <div class="menu-item"><span class="item-icon">🍮</span><div class="item-name">Caramel</div><div class="item-ingr">Espresso, Milk, Caramel Syrup</div><div class="item-prices"><div class="price-group"><span class="price-lbl">Price</span><span class="price-val">₱79</span></div></div></div>
+    <div class="menu-item"><span class="item-icon">🍫</span><div class="item-name">Mocha</div><div class="item-ingr">Espresso, Milk, Chocolate</div><div class="item-prices"><div class="price-group"><span class="price-lbl">Price</span><span class="price-val">₱89</span></div></div></div>
+    <div class="menu-item"><span class="item-icon">🍵</span><div class="item-name">Hot Chocolate</div><div class="item-ingr">Milk, Chocolate, Sweetener</div><div class="item-prices"><div class="price-group"><span class="price-lbl">Price</span><span class="price-val">₱89</span></div></div></div>
+  </div>
+
+  <!-- FRAPPE -->
+  <div class="menu-grid" id="tab-frappe">
+    <div class="menu-item"><span class="item-icon">🍪</span><div class="item-name">Oreo Frappe</div><div class="item-prices"><div class="price-group"><span class="price-lbl">Med</span><span class="price-val">₱99</span></div><div class="price-divider"></div><div class="price-group"><span class="price-lbl">Lrg</span><span class="price-val">₱119</span></div></div></div>
+    <div class="menu-item"><span class="item-icon">🍮</span><div class="item-name">Caramel Frappe</div><div class="item-prices"><div class="price-group"><span class="price-lbl">Med</span><span class="price-val">₱99</span></div><div class="price-divider"></div><div class="price-group"><span class="price-lbl">Lrg</span><span class="price-val">₱109</span></div></div></div>
+    <div class="menu-item"><span class="item-icon">🍵</span><div class="item-name">Matcha Frappe</div><div class="item-prices"><div class="price-group"><span class="price-lbl">Med</span><span class="price-val">₱99</span></div><div class="price-divider"></div><div class="price-group"><span class="price-lbl">Lrg</span><span class="price-val">₱119</span></div></div></div>
+    <div class="menu-item"><span class="item-icon">🍫</span><div class="item-name">Dark Choco Frappe</div><div class="item-prices"><div class="price-group"><span class="price-lbl">Med</span><span class="price-val">₱99</span></div><div class="price-divider"></div><div class="price-group"><span class="price-lbl">Lrg</span><span class="price-val">₱119</span></div></div></div>
+    <div class="menu-item"><span class="item-icon">🌿</span><div class="item-name">Vanilla Cream Frappe</div><div class="item-prices"><div class="price-group"><span class="price-lbl">Med</span><span class="price-val">₱99</span></div><div class="price-divider"></div><div class="price-group"><span class="price-lbl">Lrg</span><span class="price-val">₱119</span></div></div></div>
+    <div class="menu-item"><span class="item-icon">☕</span><div class="item-name">Mocha Frappe</div><div class="item-prices"><div class="price-group"><span class="price-lbl">Med</span><span class="price-val">₱99</span></div><div class="price-divider"></div><div class="price-group"><span class="price-lbl">Lrg</span><span class="price-val">₱119</span></div></div></div>
+    <div class="menu-item"><span class="item-icon">🍓</span><div class="item-name">Strawberry Cream</div><div class="item-prices"><div class="price-group"><span class="price-lbl">Med</span><span class="price-val">₱109</span></div><div class="price-divider"></div><div class="price-group"><span class="price-lbl">Lrg</span><span class="price-val">₱129</span></div></div></div>
+    <div class="menu-item"><span class="item-icon">☕</span><div class="item-name">Java Chip Frappuccino</div><div class="item-prices"><div class="price-group"><span class="price-lbl">Med</span><span class="price-val">₱109</span></div><div class="price-divider"></div><div class="price-group"><span class="price-lbl">Lrg</span><span class="price-val">₱129</span></div></div></div>
+    <div class="menu-item"><span class="item-icon">🌰</span><div class="item-name">Nutella Frappe</div><div class="item-prices"><div class="price-group"><span class="price-lbl">Med</span><span class="price-val">₱119</span></div><div class="price-divider"></div><div class="price-group"><span class="price-lbl">Lrg</span><span class="price-val">₱129</span></div></div></div>
+    <div class="menu-item"><span class="item-icon">🍪</span><div class="item-name">Biscoff Frappe</div><div class="item-prices"><div class="price-group"><span class="price-lbl">Med</span><span class="price-val">₱139</span></div><div class="price-divider"></div><div class="price-group"><span class="price-lbl">Lrg</span><span class="price-val">₱159</span></div></div></div>
+  </div>
+
+  <!-- NON-COFFEE -->
+  <div class="menu-grid" id="tab-nc">
+    <div class="menu-item"><span class="item-icon">🍓</span><div class="item-name">Milky Strawberry</div><div class="item-ingr">Strawberry Jam & Syrup, Milk</div><div class="item-prices"><div class="price-group"><span class="price-lbl">Price</span><span class="price-val">₱89</span></div></div></div>
+    <div class="menu-item"><span class="item-icon">🍫</span><div class="item-name">Chocolate</div><div class="item-ingr">Chocolate Syrup, Milk</div><div class="item-prices"><div class="price-group"><span class="price-lbl">Price</span><span class="price-val">₱89</span></div></div></div>
+    <div class="menu-item"><span class="item-icon">🍵</span><div class="item-name">Matcha (Latte)</div><div class="item-ingr">Matcha Powder, Vanilla, Milk</div><div class="item-prices"><div class="price-group"><span class="price-lbl">Price</span><span class="price-val">₱89</span></div></div></div>
+    <div class="menu-item"><span class="item-icon">🍪</span><div class="item-name">Milky Oreo</div><div class="item-ingr">Crushed Oreo, Condensed, Milk</div><div class="item-prices"><div class="price-group"><span class="price-lbl">Price</span><span class="price-val">₱89</span></div></div></div>
+    <div class="menu-item"><span class="item-icon">🍫</span><div class="item-name">Chocolate Strawberry</div><div class="item-ingr">Chocolate, Strawberry Jam, Milk</div><div class="item-prices"><div class="price-group"><span class="price-lbl">Price</span><span class="price-val">₱99</span></div></div></div>
+    <div class="menu-item"><span class="item-icon">🍵</span><div class="item-name">Matcha Strawberry</div><div class="item-ingr">Matcha, Strawberry Jam, Milk</div><div class="item-prices"><div class="price-group"><span class="price-lbl">Price</span><span class="price-val">₱99</span></div></div></div>
+    <div class="menu-item"><span class="item-icon">🌰</span><div class="item-name">Nutella (Latte)</div><div class="item-ingr">Nutella, Condensed, Milk</div><div class="item-prices"><div class="price-group"><span class="price-lbl">Price</span><span class="price-val">₱109</span></div></div></div>
+    <div class="menu-item"><span class="item-icon">🍪</span><div class="item-name">Biscoff</div><div class="item-ingr">Biscoff, Condensed, Milk</div><div class="item-prices"><div class="price-group"><span class="price-lbl">Price</span><span class="price-val">₱129</span></div></div></div>
+  </div>
+
+  <!-- SODALICIOUS -->
+  <div class="menu-grid" id="tab-soda">
+    <div class="menu-item"><span class="item-icon">🍋</span><div class="item-name">Lemon</div><div class="item-prices"><div class="price-group"><span class="price-lbl">Price</span><span class="price-val">₱49</span></div></div></div>
+    <div class="menu-item"><span class="item-icon">🌸</span><div class="item-name">Lychee</div><div class="item-prices"><div class="price-group"><span class="price-lbl">Price</span><span class="price-val">₱49</span></div></div></div>
+    <div class="menu-item"><span class="item-icon">🍇</span><div class="item-name">Grapes</div><div class="item-prices"><div class="price-group"><span class="price-lbl">Price</span><span class="price-val">₱49</span></div></div></div>
+    <div class="menu-item"><span class="item-icon">🍏</span><div class="item-name">Green Apple</div><div class="item-prices"><div class="price-group"><span class="price-lbl">Price</span><span class="price-val">₱49</span></div></div></div>
+    <div class="menu-item"><span class="item-icon">🫐</span><div class="item-name">Blueberry</div><div class="item-prices"><div class="price-group"><span class="price-lbl">Price</span><span class="price-val">₱49</span></div></div></div>
+    <div class="menu-item"><span class="item-icon">🍓</span><div class="item-name">Strawberry</div><div class="item-prices"><div class="price-group"><span class="price-lbl">Price</span><span class="price-val">₱49</span></div></div></div>
+  </div>
+</section>
+
+<!-- ADDONS -->
+<section class="addons" id="addons">
+  <div class="reveal">
+    <span class="section-label">Customize Your Drink</span>
+    <h2 class="section-title">Add <em>Ons</em></h2>
+  </div>
+  <div class="addons-grid reveal reveal-d2">
+    <div class="addon-card"><span class="addon-name">Espresso Shot</span><span class="addon-price">₱30</span></div>
+    <div class="addon-card"><span class="addon-name">Biscoff</span><span class="addon-price">₱30</span></div>
+    <div class="addon-card"><span class="addon-name">Nutella</span><span class="addon-price">₱25</span></div>
+    <div class="addon-card"><span class="addon-name">Strawberry Jam</span><span class="addon-price">₱25</span></div>
+    <div class="addon-card"><span class="addon-name">Chocolate Sauce</span><span class="addon-price">₱20</span></div>
+    <div class="addon-card"><span class="addon-name">Caramel Sauce</span><span class="addon-price">₱20</span></div>
+    <div class="addon-card"><span class="addon-name">Syrup Flavors</span><span class="addon-price">₱15</span></div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <span class="section-label" style="color:var(--caramel)">Find Us</span>
+  <h2 class="section-title" style="color:var(--cream)">Come &amp; <em>Visit</em></h2>
+  <div class="contact-grid">
+    <div class="contact-card reveal">
+      <span class="contact-icon">📷</span>
+      <span class="contact-lbl">Instagram</span>
+      <span class="contact-val">@Fresh Blends Café</span>
+    </div>
+    <div class="contact-card reveal reveal-d1">
+      <span class="contact-icon">📱</span>
+      <span class="contact-lbl">Facebook</span>
+      <span class="contact-val">Fresh Blends</span>
+    </div>
+    <div class="contact-card reveal reveal-d2">
+      <span class="contact-icon">📞</span>
+      <span class="contact-lbl">Phone</span>
+      <span class="contact-val">09605679785</span>
+    </div>
+  </div>
+  <div class="footer-line"></div>
+  <p class="footer-copy">© Fresh Blends Café · Mon–Sat 10AM–10PM · Made with ♥</p>
+</section>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('ring');
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove',e=>{
+    mx=e.clientX; my=e.clientY;
+    cursor.style.left=mx+'px'; cursor.style.top=my+'px';
+  });
+  (function tick(){
+    rx+=(mx-rx)*0.18; ry+=(my-ry)*0.18;
+    ring.style.left=rx+'px'; ring.style.top=ry+'px';
+    requestAnimationFrame(tick);
+  })();
+  document.querySelectorAll('button,a,.menu-item,.addon-card,.contact-card').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{cursor.style.transform='translate(-50%,-50%) scale(2)';ring.style.transform='translate(-50%,-50%) scale(1.5)';});
+    el.addEventListener('mouseleave',()=>{cursor.style.transform='translate(-50%,-50%) scale(1)';ring.style.transform='translate(-50%,-50%) scale(1)';});
+  });
+
+  // Nav
+  window.addEventListener('scroll',()=>{ document.getElementById('nav').classList.toggle('scrolled',scrollY>60); });
+
+  // Smooth scroll helper
+  function scrollTo(id){ document.getElementById(id)?.scrollIntoView({behavior:'smooth'}); }
+  document.querySelectorAll('a[href^="#"]').forEach(a=>{ a.addEventListener('click',e=>{e.preventDefault();scrollTo(a.getAttribute('href').slice(1));}); });
+
+  // Tabs
+  document.getElementById('tabs').addEventListener('click',e=>{
+    const btn=e.target.closest('.menu-tab'); if(!btn) return;
+    document.querySelectorAll('.menu-tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.menu-grid').forEach(g=>g.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
+  });
+
+  // Scroll reveal
+  const io = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('on'); io.unobserve(e.target); }});
+  },{threshold:0.1});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
